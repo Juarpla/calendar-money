@@ -31,33 +31,6 @@ export default function ClientHome({ initialCompanies, initialWorkLogs }: Client
       setWorkLogs(initialWorkLogs);
   }, [initialWorkLogs]);
 
-  // Migration logic
-  useEffect(() => {
-      const migrateData = async () => {
-          if (initialCompanies.length === 0 && initialWorkLogs.length === 0) {
-              const savedCompanies = localStorage.getItem("cm_companies");
-              const savedLogs = localStorage.getItem("cm_logs");
-
-              if (savedCompanies) {
-                  const localCompanies: Company[] = JSON.parse(savedCompanies);
-                  const companiesWithColor = localCompanies.map(c => ({
-                      ...c,
-                      color: c.color || '#3b82f6' // Ensure color exists if migrating old data
-                  }));
-                  // Upload companies first
-                  await Promise.all(companiesWithColor.map(c => createCompanyAction(c)));
-
-                  if (savedLogs) {
-                      const localLogs: WorkLog[] = JSON.parse(savedLogs);
-                      await Promise.all(localLogs.map(l => createOrUpdateWorkLogAction(l)));
-                  }
-                  console.log("Migration from LocalStorage completed.");
-              }
-          }
-      };
-      migrateData();
-  }, [initialCompanies.length, initialWorkLogs.length]);
-
   const addCompany = async (company: Company) => {
     setCompanies(prev => [...prev, company]);
     await createCompanyAction(company);

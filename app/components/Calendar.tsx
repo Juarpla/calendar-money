@@ -152,7 +152,7 @@ export default function Calendar({ companies, workLogs, onUpdateLog, onRemoveLog
                <div className="font-bold text-gray-900 dark:text-gray-100 capitalize">
                  {date.toLocaleDateString("es-ES", { weekday: 'short' })}
                </div>
-               <div className="text-sm text-gray-500">
+               <div className="text-sm text-zinc-400 font-medium">
                  {date.getDate()}
                </div>
             </div>
@@ -164,7 +164,7 @@ export default function Calendar({ companies, workLogs, onUpdateLog, onRemoveLog
              {HOURS.map((hour) => (
                  <div key={hour} className={`group grid grid-cols-[60px_1fr] sm:grid-cols-8 min-h-[50px] border-b dark:border-zinc-700 last:border-b-0`}>
                      {/* Time Column */}
-                     <div className="p-2 text-xs text-gray-500 text-right pr-3 -mt-2.5 sm:border-r dark:border-zinc-700">
+                     <div className="p-2 text-xs text-zinc-400 text-right pr-3 -mt-2.5 sm:border-r dark:border-zinc-700 font-medium">
                          {hour}:00
                      </div>
 

@@ -7,9 +7,18 @@ interface EarningsSummaryProps {
 
 export default function EarningsSummary({ companies, workLogs }: EarningsSummaryProps) {
   const earningsByCompany = companies.map(company => {
-    const logs = workLogs.filter(log => log.companyId === company.id);
-    const totalHours = logs.length; // Assuming each log is 1 hour
-    const totalEarned = totalHours * company.hourlyRate;
+    // Filter only unpaid logs for the summary
+    const logs = workLogs.filter(log => log.companyId === company.id && !log.isPaid);
+
+    // Calculate total earned summing individual log rates
+    const totalEarned = logs.reduce((sum, log) => {
+        // Use snapshot if available, otherwise current company rate (backward compatibility)
+        const rate = log.hourlyRateSnapshot ?? company.hourlyRate;
+        return sum + rate;
+    }, 0);
+
+    const totalHours = logs.length;
+
     return {
       ...company,
       totalHours,
@@ -43,7 +52,7 @@ export default function EarningsSummary({ companies, workLogs }: EarningsSummary
         ))}
 
         {earningsByCompany.length === 0 && (
-            <p className="text-gray-500">No hay trabajo registrado aún.</p>
+            <p className="text-gray-500">No hay trabajo pendiente de pago.</p>
         )}
       </div>
 

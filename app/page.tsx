@@ -15,8 +15,28 @@ export default function Home() {
   useEffect(() => {
     const savedCompanies = localStorage.getItem("cm_companies");
     const savedLogs = localStorage.getItem("cm_logs");
-    if (savedCompanies) setCompanies(JSON.parse(savedCompanies));
-    if (savedLogs) setWorkLogs(JSON.parse(savedLogs));
+
+    let loadedCompanies: Company[] = [];
+    if (savedCompanies) {
+        loadedCompanies = JSON.parse(savedCompanies);
+        setCompanies(loadedCompanies);
+    }
+
+    if (savedLogs) {
+        const logs: WorkLog[] = JSON.parse(savedLogs);
+        // Migration: Add hourlyRateSnapshot to existing logs if missing
+        const migratedLogs = logs.map(log => {
+            if (log.hourlyRateSnapshot === undefined) {
+                const company = loadedCompanies.find(c => c.id === log.companyId);
+                return {
+                    ...log,
+                    hourlyRateSnapshot: company ? company.hourlyRate : 0
+                };
+            }
+            return log;
+        });
+        setWorkLogs(migratedLogs);
+    }
     setLoaded(true);
   }, []);
 
@@ -35,6 +55,10 @@ export default function Home() {
 
   const addCompany = (company: Company) => {
     setCompanies([...companies, company]);
+  };
+
+  const updateCompany = (updatedCompany: Company) => {
+      setCompanies(companies.map(c => c.id === updatedCompany.id ? updatedCompany : c));
   };
 
   const deleteCompany = (id: string) => {
@@ -69,6 +93,12 @@ export default function Home() {
     setWorkLogs(workLogs.filter((l) => l.id !== logId));
   };
 
+  const markAsPaid = (companyId: string) => {
+    setWorkLogs(workLogs.map(log =>
+      log.companyId === companyId ? { ...log, isPaid: true } : log
+    ));
+  };
+
   if (!loaded) return null; // Prevent hydration mismatch
 
   return (
@@ -101,7 +131,9 @@ export default function Home() {
              <CompanyManager
                 companies={companies}
                 onAddCompany={addCompany}
+                onUpdateCompany={updateCompany}
                 onDeleteCompany={deleteCompany}
+                onResetPayments={markAsPaid}
              />
           </div>
         </div>

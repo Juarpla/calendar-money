@@ -4,7 +4,9 @@ import { Company } from '../types';
 interface CompanyManagerProps {
   companies: Company[];
   onAddCompany: (company: Company) => void;
+  onUpdateCompany: (company: Company) => void;
   onDeleteCompany: (id: string) => void;
+  onResetPayments: (id: string) => void;
 }
 
 const COLORS = [
@@ -20,31 +22,62 @@ const COLORS = [
   '#f43f5e', // rose
 ];
 
-export default function CompanyManager({ companies, onAddCompany, onDeleteCompany }: CompanyManagerProps) {
+export default function CompanyManager({ companies, onAddCompany, onUpdateCompany, onDeleteCompany, onResetPayments }: CompanyManagerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState('');
   const [locationLink, setLocationLink] = useState('');
   const [hourlyRate, setHourlyRate] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !hourlyRate) return;
 
-    // Pick a random color
-    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    if (editingId) {
+       // Update existing
+       const existingCompany = companies.find(c => c.id === editingId);
+       if (existingCompany) {
+           onUpdateCompany({
+               ...existingCompany,
+               name,
+               locationLink,
+               hourlyRate: parseFloat(hourlyRate)
+           });
+       }
+       setEditingId(null);
+    } else {
+        // Add new
+        // Pick a random color
+        const color = COLORS[Math.floor(Math.random() * COLORS.length)];
 
-    const newCompany: Company = {
-      id: crypto.randomUUID(),
-      name,
-      locationLink,
-      hourlyRate: parseFloat(hourlyRate),
-      color,
-    };
+        const newCompany: Company = {
+        id: crypto.randomUUID(),
+        name,
+        locationLink,
+        hourlyRate: parseFloat(hourlyRate),
+        color,
+        };
+        onAddCompany(newCompany);
+    }
 
-    onAddCompany(newCompany);
     setName('');
     setLocationLink('');
     setHourlyRate('');
+  };
+
+  const startEditing = (company: Company) => {
+      setName(company.name);
+      setLocationLink(company.locationLink);
+      setHourlyRate(company.hourlyRate.toString());
+      setEditingId(company.id);
+      setIsOpen(true); // Ensure form is visible
+  };
+
+  const cancelEditing = () => {
+      setName('');
+      setLocationLink('');
+      setHourlyRate('');
+      setEditingId(null);
   };
 
   return (
@@ -91,12 +124,23 @@ export default function CompanyManager({ companies, onAddCompany, onDeleteCompan
                 placeholder="https://maps.google.com..."
               />
             </div>
-            <button
-              type="submit"
-              className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-            >
-              Agregar Empresa
-            </button>
+            <div className="flex gap-2">
+                <button
+                    type="submit"
+                    className={`flex-1 text-white py-2 rounded transition ${editingId ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+                >
+                    {editingId ? 'Actualizar Empresa' : 'Agregar Empresa'}
+                </button>
+                {editingId && (
+                    <button
+                        type="button"
+                        onClick={cancelEditing}
+                        className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 dark:bg-zinc-800 dark:text-zinc-200"
+                    >
+                        Cancelar
+                    </button>
+                )}
+            </div>
           </form>
 
           <div className="mt-4">
@@ -127,14 +171,38 @@ export default function CompanyManager({ companies, onAddCompany, onDeleteCompan
                                 </a>
                               )}
                             </div>
+                            <button
+                               onClick={() => {
+                                   if(confirm('¿Estás seguro de reiniciar los pagos pendientes para ' + company.name + '?')) {
+                                       onResetPayments(company.id);
+                                   }
+                               }}
+                               className="mt-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-lg text-sm font-medium hover:bg-blue-200 dark:bg-blue-900/40 dark:text-blue-200 dark:hover:bg-blue-900/60 transition-colors active:scale-95 touch-manipulation"
+                            >
+                                Reiniciar Pagos
+                            </button>
                          </div>
                     </div>
-                    <button
-                      onClick={() => onDeleteCompany(company.id)}
-                      className="text-red-500 hover:text-red-700 px-2"
-                    >
-                      ✕
-                    </button>
+                    <div className="flex flex-col gap-6 pl-4 border-l dark:border-zinc-700 ml-2">
+                        <button
+                            onClick={() => startEditing(company)}
+                            className="text-gray-500 hover:text-blue-500 p-2 rounded hover:bg-gray-200 dark:hover:bg-zinc-700 transition"
+                            title="Editar empresa"
+                        >
+                            ✏️
+                        </button>
+                        <button
+                            onClick={() => {
+                                if (confirm(`¿Estás seguro de eliminar la empresa "${company.name}"? Se eliminarán también los registros de horas registrados para ella de la vista.`)) {
+                                    onDeleteCompany(company.id);
+                                }
+                            }}
+                            className="text-red-500 hover:text-red-700 p-2 rounded hover:bg-red-50 dark:hover:bg-zinc-700 transition"
+                            title="Eliminar empresa"
+                        >
+                            ✕
+                        </button>
+                    </div>
                   </li>
                 ))}
               </ul>

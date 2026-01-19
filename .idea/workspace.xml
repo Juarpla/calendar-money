@@ -4,8 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6f748f90-7b58-4f5c-b1d5-5e842b47f807" name="Changes" comment="Second commit">
-      <change beforePath="$PROJECT_DIR$/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/layout.tsx" afterDir="false" />
+    <list default="true" id="6f748f90-7b58-4f5c-b1d5-5e842b47f807" name="Changes" comment="4 commit">
+      <change beforePath="$PROJECT_DIR$/app/components/Calendar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/Calendar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/components/CompanyManager.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/CompanyManager.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/components/EarningsSummary.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/EarningsSummary.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/types.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +100,7 @@
       <option name="presentableId" value="Default" />
       <updated>1768843161444</updated>
       <workItem from="1768843162513" duration="1358000" />
-      <workItem from="1768844530098" duration="563000" />
+      <workItem from="1768844530098" duration="3307000" />
     </task>
     <task id="LOCAL-00001" summary="First commit">
       <option name="closed" value="true" />
@@ -114,7 +118,23 @@
       <option name="project" value="LOCAL" />
       <updated>1768844609188</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="3 commit">
+      <option name="closed" value="true" />
+      <created>1768845103749</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1768845103749</updated>
+    </task>
+    <task id="LOCAL-00004" summary="4 commit">
+      <option name="closed" value="true" />
+      <created>1768846056160</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1768846056160</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -123,7 +143,9 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="First commit" />
     <MESSAGE value="Second commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="Second commit" />
+    <MESSAGE value="3 commit" />
+    <MESSAGE value="4 commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="4 commit" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

@@ -57,11 +57,15 @@ export default function Calendar({ companies, workLogs, onUpdateLog, onRemoveLog
 
   const handleSave = (companyId: string) => {
     if (!selectedSlot) return;
+
+    const company = companies.find(c => c.id === companyId);
+
     const newLog: WorkLog = {
       id: currentLog?.id || crypto.randomUUID(),
       date: selectedSlot.date,
       hour: selectedSlot.hour,
       companyId,
+      hourlyRateSnapshot: company?.hourlyRate // Save current rate
     };
     onUpdateLog(newLog);
     setModalOpen(false);

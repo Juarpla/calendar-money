@@ -11,4 +11,6 @@ export interface WorkLog {
   date: string; // ISO date string YYYY-MM-DD
   hour: number; // 7 to 22
   companyId: string;
+  isPaid?: boolean;
+  hourlyRateSnapshot?: number; // Rate at the time of work
 }

@@ -1,0 +1,70 @@
+"use server";
+
+import { db } from "@/db";
+import { companies, workLogs } from "@/db/schema";
+import { Company, WorkLog } from "./types";
+import { eq, and } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+
+export async function getCompanies() {
+  const result = await db.select().from(companies);
+  return result.map(c => ({
+      ...c,
+      color: c.color ?? undefined,
+  }));
+}
+
+export async function getWorkLogs() {
+  const result = await db.select().from(workLogs);
+  return result.map(l => ({
+      ...l,
+      isPaid: l.isPaid ?? undefined,
+      hourlyRateSnapshot: l.hourlyRateSnapshot ?? undefined,
+  }));
+}
+
+export async function createCompanyAction(data: Company) {
+  await db.insert(companies).values(data);
+  revalidatePath("/");
+}
+
+export async function updateCompanyAction(data: Company) {
+  await db.update(companies)
+    .set(data)
+    .where(eq(companies.id, data.id));
+  revalidatePath("/");
+}
+
+export async function deleteCompanyAction(id: string) {
+  await db.delete(companies).where(eq(companies.id, id));
+  revalidatePath("/");
+}
+
+export async function createOrUpdateWorkLogAction(data: WorkLog) {
+   const existing = await db.select().from(workLogs).where(eq(workLogs.id, data.id));
+   if (existing.length > 0) {
+       await db.update(workLogs).set(data).where(eq(workLogs.id, data.id));
+   } else {
+       // Ideally we check if there is ALREADY a log for this date/hour, to prevent duplicates if ID was generated blindly new
+       // But assuming client side handles ID assignment correctly
+       await db.insert(workLogs).values(data);
+   }
+   revalidatePath("/");
+}
+
+export async function deleteWorkLogAction(id: string) {
+    await db.delete(workLogs).where(eq(workLogs.id, id));
+    revalidatePath("/");
+}
+
+export async function resetPaymentsAction(companyId: string) {
+    await db.update(workLogs)
+        .set({ isPaid: true })
+        .where(
+            and(
+                eq(workLogs.companyId, companyId),
+                // eq(workLogs.isPaid, false) // Optional, but updating all is fine
+            )
+        );
+    revalidatePath("/");
+}

@@ -3,6 +3,7 @@ export interface Company {
   name: string;
   locationLink: string;
   hourlyRate: number;
+  color?: string;
 }
 
 export interface WorkLog {

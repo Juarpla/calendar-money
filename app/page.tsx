@@ -76,8 +76,8 @@ export default function Home() {
       <main className="max-w-6xl mx-auto space-y-6">
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
            <div>
-            <h1 className="text-3xl font-bold tracking-tight">Calendar Money</h1>
-            <p className="text-zinc-500 dark:text-zinc-400">Track your hourly work and earnings.</p>
+            <h1 className="text-3xl font-bold tracking-tight">Mi Calendario de Pagos</h1>
+            <p className="text-zinc-500 dark:text-zinc-400">Rastrea tu trabajo por horas y ganancias.</p>
            </div>
         </header>
 

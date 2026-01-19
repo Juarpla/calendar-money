@@ -89,8 +89,8 @@ export default function Calendar({ companies, workLogs, onUpdateLog, onRemoveLog
     <div className="w-full bg-white dark:bg-zinc-900 rounded-lg shadow overflow-hidden">
       {/* Header Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-center p-4 border-b dark:border-zinc-700 gap-4">
-        <h2 className="text-xl font-bold">
-          {startOfWeek.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+        <h2 className="text-xl font-bold capitalize">
+          {startOfWeek.toLocaleDateString("es-ES", { month: 'long', year: 'numeric' })}
         </h2>
         <div className="flex gap-2">
             <button
@@ -101,13 +101,13 @@ export default function Calendar({ companies, workLogs, onUpdateLog, onRemoveLog
                 }}
                 className="px-3 py-1 bg-gray-100 dark:bg-zinc-800 rounded hover:bg-gray-200"
             >
-                Prev Week
+                Semana Ant.
             </button>
             <button
                 onClick={() => setCurrentDate(new Date())}
                 className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200"
             >
-                Today
+                Hoy
             </button>
             <button
                 onClick={() => {
@@ -117,7 +117,7 @@ export default function Calendar({ companies, workLogs, onUpdateLog, onRemoveLog
                 }}
                 className="px-3 py-1 bg-gray-100 dark:bg-zinc-800 rounded hover:bg-gray-200"
             >
-                Next Week
+                Semana Sig.
             </button>
         </div>
       </div>
@@ -134,7 +134,7 @@ export default function Calendar({ companies, workLogs, onUpdateLog, onRemoveLog
                     : 'text-gray-500 dark:text-gray-400'
                 }`}
             >
-                {day.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' })}
+                {day.toLocaleDateString("es-ES", { weekday: 'short', day: 'numeric' })}
             </button>
         ))}
       </div>
@@ -142,11 +142,11 @@ export default function Calendar({ companies, workLogs, onUpdateLog, onRemoveLog
       <div className="flex flex-col">
         {/* Header Row (Desktop) */}
         <div className="hidden sm:grid sm:grid-cols-8 border-b dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800">
-          <div className="p-2 text-center text-sm text-gray-500 font-medium border-r dark:border-zinc-700">Time</div>
+          <div className="p-2 text-center text-sm text-gray-500 font-medium border-r dark:border-zinc-700">Hora</div>
           {weekDays.map((date, i) => (
             <div key={i} className="p-2 text-center border-r dark:border-zinc-700 last:border-r-0">
-               <div className="font-bold text-gray-900 dark:text-gray-100">
-                 {date.toLocaleDateString(undefined, { weekday: 'short' })}
+               <div className="font-bold text-gray-900 dark:text-gray-100 capitalize">
+                 {date.toLocaleDateString("es-ES", { weekday: 'short' })}
                </div>
                <div className="text-sm text-gray-500">
                  {date.getDate()}
@@ -208,14 +208,21 @@ function Slot({ date, hour, company, onClick }: { date: Date, hour: number, comp
     return (
         <button
             onClick={onClick}
+            style={company ? {
+                backgroundColor: `${company.color || '#3b82f6'}26`, // ~15% opacity
+                borderLeftColor: company.color || '#3b82f6'
+            } : undefined}
             className={`w-full h-full min-h-[40px] absolute inset-0 text-left p-1 text-xs transition-colors hover:bg-gray-50 dark:hover:bg-zinc-800 ${
                 company 
-                ? 'bg-blue-50 dark:bg-blue-900/40 border-l-4 border-blue-500' 
+                ? 'border-l-4' 
                 : ''
             }`}
         >
             {company && (
-                <div className="truncate font-medium text-blue-900 dark:text-blue-100">
+                <div
+                    className="truncate font-medium"
+                    style={{ color: company.color || '#1e3a8a'}}
+                >
                     {company.name}
                 </div>
             )}

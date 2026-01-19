@@ -7,6 +7,19 @@ interface CompanyManagerProps {
   onDeleteCompany: (id: string) => void;
 }
 
+const COLORS = [
+  '#ef4444', // red
+  '#f97316', // orange
+  '#f59e0b', // amber
+  '#84cc16', // lime
+  '#10b981', // emerald
+  '#06b6d4', // cyan
+  '#3b82f6', // blue
+  '#8b5cf6', // violet
+  '#d946ef', // fuchsia
+  '#f43f5e', // rose
+];
+
 export default function CompanyManager({ companies, onAddCompany, onDeleteCompany }: CompanyManagerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState('');
@@ -17,11 +30,15 @@ export default function CompanyManager({ companies, onAddCompany, onDeleteCompan
     e.preventDefault();
     if (!name || !hourlyRate) return;
 
+    // Pick a random color
+    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+
     const newCompany: Company = {
       id: crypto.randomUUID(),
       name,
       locationLink,
       hourlyRate: parseFloat(hourlyRate),
+      color,
     };
 
     onAddCompany(newCompany);
@@ -36,7 +53,7 @@ export default function CompanyManager({ companies, onAddCompany, onDeleteCompan
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex justify-between items-center text-lg font-bold mb-2"
       >
-        <span>🏢 Manage Companies</span>
+        <span>🏢 Administrar Empresas</span>
         <span>{isOpen ? '▲' : '▼'}</span>
       </button>
 
@@ -44,7 +61,7 @@ export default function CompanyManager({ companies, onAddCompany, onDeleteCompan
         <div className="space-y-4">
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             <div>
-              <label className="block text-sm font-medium mb-1">Company Name</label>
+              <label className="block text-sm font-medium mb-1">Nombre de Empresa</label>
               <input
                 type="text"
                 value={name}
@@ -54,7 +71,7 @@ export default function CompanyManager({ companies, onAddCompany, onDeleteCompan
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Hourly Rate ($)</label>
+              <label className="block text-sm font-medium mb-1">Tarifa por Hora (S/.)</label>
               <input
                 type="number"
                 step="0.1"
@@ -65,7 +82,7 @@ export default function CompanyManager({ companies, onAddCompany, onDeleteCompan
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Location (Link)</label>
+              <label className="block text-sm font-medium mb-1">Ubicación (Link)</label>
               <input
                 type="url"
                 value={locationLink}
@@ -78,33 +95,39 @@ export default function CompanyManager({ companies, onAddCompany, onDeleteCompan
               type="submit"
               className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
             >
-              Add Company
+              Agregar Empresa
             </button>
           </form>
 
           <div className="mt-4">
-            <h3 className="font-semibold mb-2">My Companies</h3>
+            <h3 className="font-semibold mb-2">Mis Empresas</h3>
             {companies.length === 0 ? (
-              <p className="text-gray-500 text-sm">No companies added yet.</p>
+              <p className="text-gray-500 text-sm">No hay empresas agregadas.</p>
             ) : (
               <ul className="space-y-2">
                 {companies.map((company) => (
                   <li key={company.id} className="flex justify-between items-center p-2 bg-gray-50 dark:bg-zinc-800 rounded">
-                    <div>
-                      <div className="font-medium">{company.name}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        ${company.hourlyRate}/hr
-                        {company.locationLink && (
-                          <a
-                            href={company.locationLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="ml-2 text-blue-500 hover:underline"
-                          >
-                            Map
-                          </a>
-                        )}
-                      </div>
+                    <div className="flex items-center gap-3">
+                         <div
+                            className="w-4 h-4 rounded-full"
+                            style={{ backgroundColor: company.color || '#3b82f6' }}
+                         />
+                         <div>
+                            <div className="font-medium">{company.name}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                              S/. {company.hourlyRate}/hr
+                              {company.locationLink && (
+                                <a
+                                  href={company.locationLink}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="ml-2 text-blue-500 hover:underline"
+                                >
+                                  Mapa
+                                </a>
+                              )}
+                            </div>
+                         </div>
                     </div>
                     <button
                       onClick={() => onDeleteCompany(company.id)}

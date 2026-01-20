@@ -4,16 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6f748f90-7b58-4f5c-b1d5-5e842b47f807" name="Changes" comment="5 commit">
-      <change afterPath="$PROJECT_DIR$/app/ClientPage.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/actions.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/db/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/db/schema.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/drizzle.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-    </list>
+    <list default="true" id="6f748f90-7b58-4f5c-b1d5-5e842b47f807" name="Changes" comment="Visible text" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -27,18 +18,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Juarpla"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Juarpla&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Juarpla/calendar-money.git",
-    "accountId": "61e48f20-6594-48dd-8eda-f0cf057d5bf6"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Juarpla/calendar-money.git&quot;,
+    &quot;accountId&quot;: &quot;61e48f20-6594-48dd-8eda-f0cf057d5bf6&quot;
   }
-}]]></component>
+}</component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
@@ -145,7 +136,15 @@
       <option name="project" value="LOCAL" />
       <updated>1768847853017</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Visible text">
+      <option name="closed" value="true" />
+      <created>1768850779900</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1768850779900</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -157,7 +156,8 @@
     <MESSAGE value="3 commit" />
     <MESSAGE value="4 commit" />
     <MESSAGE value="5 commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="5 commit" />
+    <MESSAGE value="Visible text" />
+    <option name="LAST_COMMIT_MESSAGE" value="Visible text" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

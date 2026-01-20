@@ -1,3 +1,5 @@
+"use client";
+import { useEffect, useState } from 'react';
 import { Company, WorkLog } from '../types';
 
 interface EarningsSummaryProps {
@@ -6,9 +8,30 @@ interface EarningsSummaryProps {
 }
 
 export default function EarningsSummary({ companies, workLogs }: EarningsSummaryProps) {
+  const [now, setNow] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setNow(new Date());
+    const interval = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   const earningsByCompany = companies.map(company => {
     // Filter only unpaid logs for the summary
-    const logs = workLogs.filter(log => log.companyId === company.id && !log.isPaid);
+    const logs = workLogs.filter(log => {
+      // Basic filtering
+      if (log.companyId !== company.id || log.isPaid) return false;
+
+      // If we haven't determined "now" yet (SSR), don't include to avoid mismatch
+      if (!now) return false;
+
+      // Check if 1 hour has passed since start time
+      const [year, month, day] = log.date.split('-').map(Number);
+      // Construct completion time: date + hour + 1 hour (60 mins)
+      const completionTime = new Date(year, month - 1, day, log.hour + 1, 0, 0);
+
+      return now >= completionTime;
+    });
 
     // Calculate total earned summing individual log rates
     const totalEarned = logs.reduce((sum, log) => {

@@ -14,7 +14,8 @@ import {
     createOrUpdateWorkLogAction,
     deleteWorkLogAction,
     resetPaymentsAction,
-    createOrUpdateTransportLogAction
+    createOrUpdateTransportLogAction,
+    resetTransportPaymentsAction
 } from "./actions";
 
 interface ClientPageProps {
@@ -91,10 +92,20 @@ export default function ClientHome({ initialCompanies, initialWorkLogs, initialT
   };
 
   const markAsPaid = async (companyId: string) => {
+    // Work logs
     setWorkLogs(prev => prev.map(log =>
       log.companyId === companyId ? { ...log, isPaid: true } : log
     ));
-    await resetPaymentsAction(companyId);
+
+    // Transport logs: mark as paid so they stop appearing in summaries
+    setTransportLogs(prev => prev.map(t =>
+      t.companyId === companyId ? { ...t, isPaid: true } : t
+    ));
+
+    await Promise.all([
+      resetPaymentsAction(companyId),
+      resetTransportPaymentsAction(companyId),
+    ]);
   };
 
   const handleOpenTransportModal = (companyId: string, date: string, hour: number, workLogId: string) => {

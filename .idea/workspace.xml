@@ -4,12 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6f748f90-7b58-4f5c-b1d5-5e842b47f807" name="Changes" comment="Add new more colors">
+    <list default="true" id="6f748f90-7b58-4f5c-b1d5-5e842b47f807" name="Changes" comment="Save transport cost correctly.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/ClientPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/ClientPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/actions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/actions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/components/TransportCostModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/TransportCostModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/components/WorkEntryModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/WorkEntryModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/components/EarningsSummary.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/EarningsSummary.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/components/TransportSummary.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/components/TransportSummary.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/app/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db/schema.ts" beforeDir="false" afterPath="$PROJECT_DIR$/db/schema.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,7 +103,7 @@
       <updated>1768843161444</updated>
       <workItem from="1768843162513" duration="1358000" />
       <workItem from="1768844530098" duration="5542000" />
-      <workItem from="1769625028615" duration="21117000" />
+      <workItem from="1769625028615" duration="23145000" />
     </task>
     <task id="LOCAL-00001" summary="First commit">
       <option name="closed" value="true" />
@@ -183,11 +185,30 @@
       <option name="project" value="LOCAL" />
       <updated>1769673044475</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Save transport cost correctly.">
+      <option name="closed" value="true" />
+      <created>1769715130578</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1769715130578</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="First commit" />
@@ -200,7 +221,8 @@
     <MESSAGE value="Make Payments summary flex" />
     <MESSAGE value="Add transport summary to general view." />
     <MESSAGE value="Add new more colors" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add new more colors" />
+    <MESSAGE value="Save transport cost correctly." />
+    <option name="LAST_COMMIT_MESSAGE" value="Save transport cost correctly." />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

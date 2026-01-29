@@ -11,8 +11,8 @@ export default function TransportSummary({ companies, transportLogs }: Transport
   const [isOpen, setIsOpen] = useState(false);
 
   const transportByCompany = companies.map(company => {
-    // Filter transport logs for this company
-    const logs = transportLogs.filter(log => log.companyId === company.id);
+    // Filter transport logs for this company (only unpaid)
+    const logs = transportLogs.filter(log => log.companyId === company.id && !log.isPaid);
 
     // Calculate total transport cost
     const totalCost = logs.reduce((sum, log) => sum + log.tripCost, 0);
@@ -51,7 +51,7 @@ export default function TransportSummary({ companies, transportLogs }: Transport
               </div>
 
               <div className="text-sm text-gray-500 pl-5">
-                <span>{item.totalTrips} gasto{item.totalTrips !== 1 ? 's' : ''}</span>
+                <span>{item.totalTrips} viaje{item.totalTrips !== 1 ? 's' : ''} ida y vuelta </span>
               </div>
             </div>
           ))}

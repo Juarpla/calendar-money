@@ -22,4 +22,5 @@ export interface TransportLog {
   companyId: string;
   tripCost: number; // Cost of trip with 2 decimals
   description?: string; // Optional description of the trip
+  isPaid?: boolean;
 }

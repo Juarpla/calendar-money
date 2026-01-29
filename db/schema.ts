@@ -24,5 +24,5 @@ export const transportLogs = pgTable("transport_logs", {
   companyId: text("company_id").references(() => companies.id, { onDelete: 'cascade' }).notNull(),
   tripCost: doublePrecision("trip_cost").notNull(),
   description: text("description"),
+  isPaid: boolean("is_paid").default(false),
 });
-

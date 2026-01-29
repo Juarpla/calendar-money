@@ -76,6 +76,7 @@ export async function getTransportLogs() {
       ...t,
       workLogId: t.workLogId ?? undefined,
       description: t.description ?? undefined,
+      isPaid: t.isPaid ?? undefined,
   }));
 }
 
@@ -121,3 +122,9 @@ export async function deleteTransportLogAction(id: string) {
   revalidatePath("/");
 }
 
+export async function resetTransportPaymentsAction(companyId: string) {
+  await db.update(transportLogs)
+    .set({ isPaid: true })
+    .where(eq(transportLogs.companyId, companyId));
+  revalidatePath("/");
+}

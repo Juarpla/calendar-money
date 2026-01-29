@@ -9,11 +9,10 @@ interface EarningsSummaryProps {
 }
 
 export default function EarningsSummary({ companies, workLogs, transportLogs }: EarningsSummaryProps) {
-  const [now, setNow] = useState<Date | null>(null);
+  const [now, setNow] = useState<Date>(() => new Date());
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    setNow(new Date());
     const interval = setInterval(() => setNow(new Date()), 60000);
     return () => clearInterval(interval);
   }, []);
@@ -44,7 +43,7 @@ export default function EarningsSummary({ companies, workLogs, transportLogs }: 
 
     // Calculate total transport costs for this company's logs
     const totalTransport = logs.reduce((sum, log) => {
-      const transport = transportLogs.find(t => t.workLogId === log.id);
+      const transport = transportLogs.find(t => t.workLogId === log.id && !t.isPaid);
       return sum + (transport?.tripCost || 0);
     }, 0);
 
@@ -60,7 +59,7 @@ export default function EarningsSummary({ companies, workLogs, transportLogs }: 
     };
   });
 
-  const grandTotal = earningsByCompany.reduce((sum, c) => sum + c.totalWithTransport, 0);
+  const grandTotal = earningsByCompany.reduce((sum, c) => sum + c.totalEarned, 0);
 
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-lg shadow p-4">
@@ -81,20 +80,15 @@ export default function EarningsSummary({ companies, workLogs, transportLogs }: 
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color || '#3b82f6' }} />
                   <span className="font-semibold">{item.name}</span>
                 </div>
-                <span className="text-green-600 dark:text-green-400 font-bold">S/. {item.totalWithTransport.toFixed(2)}</span>
+                <span className="text-green-600 dark:text-green-400 font-bold">S/. {item.totalEarned.toFixed(2)}</span>
               </div>
               <div className="text-sm text-gray-500 pl-5">
                 <div className="flex justify-between">
-                  <span>{item.totalHours} horas @ S/. {item.hourlyRate}/hr = S/. {item.totalEarned.toFixed(2)}</span>
+                  <span>{item.totalHours} hora{item.totalHours !== 1 ? 's' : ''} @ S/. {item.hourlyRate}/hr</span>
                   {item.locationLink && (
                     <a href={item.locationLink} target="_blank" className="text-blue-500 hover:underline">Ubicación</a>
                   )}
                 </div>
-                {item.totalTransport > 0 && (
-                  <div className="text-orange-600 dark:text-orange-400">
-                    + Movilidad: S/. {item.totalTransport.toFixed(2)}
-                  </div>
-                )}
               </div>
             </div>
           ))}

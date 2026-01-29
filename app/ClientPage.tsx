@@ -4,24 +4,39 @@ import { useEffect, useState } from "react";
 import CompanyManager from "./components/CompanyManager";
 import Calendar from "./components/Calendar";
 import EarningsSummary from "./components/EarningsSummary";
-import { Company, WorkLog } from "./types";
+import TransportSummary from "./components/TransportSummary";
+import TransportCostModal from "./components/TransportCostModal";
+import { Company, WorkLog, TransportLog } from "./types";
 import {
     createCompanyAction,
     updateCompanyAction,
     deleteCompanyAction,
     createOrUpdateWorkLogAction,
     deleteWorkLogAction,
-    resetPaymentsAction
+    resetPaymentsAction,
+    createTransportLogAction
 } from "./actions";
 
 interface ClientPageProps {
     initialCompanies: Company[];
     initialWorkLogs: WorkLog[];
+    initialTransportLogs: TransportLog[];
 }
 
-export default function ClientHome({ initialCompanies, initialWorkLogs }: ClientPageProps) {
+export default function ClientHome({ initialCompanies, initialWorkLogs, initialTransportLogs }: ClientPageProps) {
   const [companies, setCompanies] = useState<Company[]>(initialCompanies);
   const [workLogs, setWorkLogs] = useState<WorkLog[]>(initialWorkLogs);
+  const [transportLogs, setTransportLogs] = useState<TransportLog[]>(initialTransportLogs);
+
+  // Transport modal state
+  type TransportModalState = {
+    companyId: string;
+    date: string;
+    hour: number;
+    workLogId: string;
+  };
+  const [transportModalOpen, setTransportModalOpen] = useState(false);
+  const [transportModalData, setTransportModalData] = useState<TransportModalState | null>(null);
 
   useEffect(() => {
       setCompanies(initialCompanies);
@@ -30,6 +45,10 @@ export default function ClientHome({ initialCompanies, initialWorkLogs }: Client
   useEffect(() => {
       setWorkLogs(initialWorkLogs);
   }, [initialWorkLogs]);
+
+  useEffect(() => {
+      setTransportLogs(initialTransportLogs);
+  }, [initialTransportLogs]);
 
   const addCompany = async (company: Company) => {
     setCompanies(prev => [...prev, company]);
@@ -65,6 +84,30 @@ export default function ClientHome({ initialCompanies, initialWorkLogs }: Client
     await resetPaymentsAction(companyId);
   };
 
+  const handleOpenTransportModal = (companyId: string, date: string, hour: number, workLogId: string) => {
+    setTransportModalData({ companyId, date, hour, workLogId });
+    setTransportModalOpen(true);
+  };
+
+  const handleSaveTransportCost = async (cost: number, description?: string) => {
+    if (!transportModalData) return;
+
+    const newTransportLog: TransportLog = {
+      id: crypto.randomUUID(),
+      workLogId: transportModalData.workLogId,
+      date: transportModalData.date,
+      companyId: transportModalData.companyId,
+      tripCost: cost,
+      description
+    };
+
+    setTransportLogs(prev => [...prev, newTransportLog]);
+    await createTransportLogAction(newTransportLog);
+
+    setTransportModalOpen(false);
+    setTransportModalData(null);
+  };
+
   return (
     <div className="min-h-screen bg-zinc-100 dark:bg-black text-zinc-900 dark:text-zinc-100 p-4 pb-20 sm:p-8 font-sans">
       <main className="max-w-6xl mx-auto space-y-6">
@@ -82,6 +125,7 @@ export default function ClientHome({ initialCompanies, initialWorkLogs }: Client
                workLogs={workLogs}
                onUpdateLog={updateLog}
                onRemoveLog={removeLog}
+               onOpenTransportModal={handleOpenTransportModal}
              />
           </div>
 
@@ -89,6 +133,11 @@ export default function ClientHome({ initialCompanies, initialWorkLogs }: Client
              <EarningsSummary
                 companies={companies}
                 workLogs={workLogs}
+                transportLogs={transportLogs}
+             />
+             <TransportSummary
+                companies={companies}
+                transportLogs={transportLogs}
              />
              <CompanyManager
                 companies={companies}
@@ -99,6 +148,17 @@ export default function ClientHome({ initialCompanies, initialWorkLogs }: Client
              />
           </div>
         </div>
+
+        <TransportCostModal
+          isOpen={transportModalOpen}
+          onClose={() => {
+            setTransportModalOpen(false);
+            setTransportModalData(null);
+          }}
+          onSave={handleSaveTransportCost}
+          companyName={transportModalData ? companies.find(c => c.id === transportModalData.companyId)?.name || '' : ''}
+          selectedDate={transportModalData?.date || ''}
+        />
       </main>
     </div>
   );

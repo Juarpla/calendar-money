@@ -1,13 +1,14 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { Company, WorkLog } from '../types';
+import { Company, WorkLog, TransportLog } from '../types';
 
 interface EarningsSummaryProps {
   companies: Company[];
   workLogs: WorkLog[];
+  transportLogs: TransportLog[];
 }
 
-export default function EarningsSummary({ companies, workLogs }: EarningsSummaryProps) {
+export default function EarningsSummary({ companies, workLogs, transportLogs }: EarningsSummaryProps) {
   const [now, setNow] = useState<Date | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -41,16 +42,25 @@ export default function EarningsSummary({ companies, workLogs }: EarningsSummary
         return sum + rate;
     }, 0);
 
+    // Calculate total transport costs for this company's logs
+    const totalTransport = logs.reduce((sum, log) => {
+      const transport = transportLogs.find(t => t.workLogId === log.id);
+      return sum + (transport?.tripCost || 0);
+    }, 0);
+
     const totalHours = logs.length;
+    const totalWithTransport = totalEarned + totalTransport;
 
     return {
       ...company,
       totalHours,
-      totalEarned
+      totalEarned,
+      totalTransport,
+      totalWithTransport
     };
   });
 
-  const grandTotal = earningsByCompany.reduce((sum, c) => sum + c.totalEarned, 0);
+  const grandTotal = earningsByCompany.reduce((sum, c) => sum + c.totalWithTransport, 0);
 
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-lg shadow p-4">
@@ -71,12 +81,19 @@ export default function EarningsSummary({ companies, workLogs }: EarningsSummary
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color || '#3b82f6' }} />
                   <span className="font-semibold">{item.name}</span>
                 </div>
-                <span className="text-green-600 dark:text-green-400 font-bold">S/. {item.totalEarned.toFixed(2)}</span>
+                <span className="text-green-600 dark:text-green-400 font-bold">S/. {item.totalWithTransport.toFixed(2)}</span>
               </div>
-              <div className="text-sm text-gray-500 flex justify-between pl-5">
-                <span>{item.totalHours} horas @ S/. {item.hourlyRate}/hr</span>
-                {item.locationLink && (
-                  <a href={item.locationLink} target="_blank" className="text-blue-500 hover:underline">Ubicación</a>
+              <div className="text-sm text-gray-500 pl-5">
+                <div className="flex justify-between">
+                  <span>{item.totalHours} horas @ S/. {item.hourlyRate}/hr = S/. {item.totalEarned.toFixed(2)}</span>
+                  {item.locationLink && (
+                    <a href={item.locationLink} target="_blank" className="text-blue-500 hover:underline">Ubicación</a>
+                  )}
+                </div>
+                {item.totalTransport > 0 && (
+                  <div className="text-orange-600 dark:text-orange-400">
+                    + Movilidad: S/. {item.totalTransport.toFixed(2)}
+                  </div>
                 )}
               </div>
             </div>

@@ -9,6 +9,7 @@ interface WorkEntryModalProps {
   selectedDate: string;
   selectedHour: number;
   currentCompanyId?: string;
+  onOpenTransportModal: (companyId: string) => void;
 }
 
 export default function WorkEntryModal({
@@ -20,8 +21,13 @@ export default function WorkEntryModal({
   selectedDate,
   selectedHour,
   currentCompanyId,
+  onOpenTransportModal,
 }: WorkEntryModalProps) {
   if (!isOpen) return null;
+
+  const handleCompanySelect = (companyId: string) => {
+    onOpenTransportModal(companyId);
+  };
 
   // Format date readable
   const displayDate = new Date(selectedDate).toLocaleDateString('es-ES', { weekday: 'long', month: 'short', day: 'numeric' });
@@ -37,7 +43,7 @@ export default function WorkEntryModal({
           {companies.map((company) => (
             <button
               key={company.id}
-              onClick={() => onSave(company.id)}
+              onClick={() => handleCompanySelect(company.id)}
               style={currentCompanyId === company.id ? {
                   borderColor: company.color || '#3b82f6',
                   backgroundColor: `${company.color || '#3b82f6'}1a` // 10% opacity

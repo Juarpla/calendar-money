@@ -14,3 +14,12 @@ export interface WorkLog {
   isPaid?: boolean;
   hourlyRateSnapshot?: number; // Rate at the time of work
 }
+
+export interface TransportLog {
+  id: string;
+  workLogId?: string; // Reference to the work log (optional for backward compatibility)
+  date: string; // ISO date string YYYY-MM-DD
+  companyId: string;
+  tripCost: number; // Cost of trip with 2 decimals
+  description?: string; // Optional description of the trip
+}

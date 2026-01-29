@@ -7,11 +7,12 @@ interface CalendarProps {
   workLogs: WorkLog[];
   onUpdateLog: (log: WorkLog) => void;
   onRemoveLog: (logId: string) => void;
+  onOpenTransportModal: (companyId: string, date: string, hour: number, workLogId: string) => void;
 }
 
 const HOURS = Array.from({ length: 16 }, (_, i) => i + 7); // 7 to 22
 
-export default function Calendar({ companies, workLogs, onUpdateLog, onRemoveLog }: CalendarProps) {
+export default function Calendar({ companies, workLogs, onUpdateLog, onRemoveLog, onOpenTransportModal }: CalendarProps) {
   // State for current view
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -60,8 +61,9 @@ export default function Calendar({ companies, workLogs, onUpdateLog, onRemoveLog
 
     const company = companies.find(c => c.id === companyId);
 
+    const workLogId = currentLog?.id || crypto.randomUUID();
     const newLog: WorkLog = {
-      id: currentLog?.id || crypto.randomUUID(),
+      id: workLogId,
       date: selectedSlot.date,
       hour: selectedSlot.hour,
       companyId,
@@ -69,6 +71,9 @@ export default function Calendar({ companies, workLogs, onUpdateLog, onRemoveLog
     };
     onUpdateLog(newLog);
     setModalOpen(false);
+
+    // Return the workLogId for transport modal
+    return workLogId;
   };
 
   const handleClear = () => {
@@ -76,6 +81,14 @@ export default function Calendar({ companies, workLogs, onUpdateLog, onRemoveLog
       onRemoveLog(currentLog.id);
     }
     setModalOpen(false);
+  };
+
+  const handleOpenTransportModal = (companyId: string) => {
+    if (!selectedSlot) return;
+    const workLogId = handleSave(companyId);
+    if (workLogId) {
+      onOpenTransportModal(companyId, selectedSlot.date, selectedSlot.hour, workLogId);
+    }
   };
 
   const getCompanyForSlot = (date: Date, hour: number) => {
@@ -199,6 +212,7 @@ export default function Calendar({ companies, workLogs, onUpdateLog, onRemoveLog
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
         onClear={handleClear}
+        onOpenTransportModal={handleOpenTransportModal}
         companies={companies}
         selectedDate={selectedSlot?.date || ''}
         selectedHour={selectedSlot?.hour || 0}

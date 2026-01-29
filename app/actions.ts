@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/db";
-import { companies, workLogs } from "@/db/schema";
-import { Company, WorkLog } from "./types";
+import { companies, workLogs, transportLogs } from "@/db/schema";
+import { Company, WorkLog, TransportLog } from "./types";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -68,3 +68,24 @@ export async function resetPaymentsAction(companyId: string) {
         );
     revalidatePath("/");
 }
+
+// Transport Logs Actions
+export async function getTransportLogs() {
+  const result = await db.select().from(transportLogs);
+  return result.map(t => ({
+      ...t,
+      workLogId: t.workLogId ?? undefined,
+      description: t.description ?? undefined,
+  }));
+}
+
+export async function createTransportLogAction(data: TransportLog) {
+  await db.insert(transportLogs).values(data);
+  revalidatePath("/");
+}
+
+export async function deleteTransportLogAction(id: string) {
+  await db.delete(transportLogs).where(eq(transportLogs.id, id));
+  revalidatePath("/");
+}
+

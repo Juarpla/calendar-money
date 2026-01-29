@@ -10,5 +10,5 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-  tablesFilter: ["companies", "work_logs"],
+  tablesFilter: ["companies", "work_logs", "transport_logs"],
 });

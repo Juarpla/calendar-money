@@ -1,0 +1,1 @@
+ALTER TABLE "transport_logs" ALTER COLUMN "work_log_id" DROP NOT NULL;

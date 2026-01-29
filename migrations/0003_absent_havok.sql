@@ -1,0 +1,2 @@
+ALTER TABLE "transport_logs" ADD COLUMN "work_log_id" text NOT NULL;--> statement-breakpoint
+ALTER TABLE "transport_logs" ADD CONSTRAINT "transport_logs_work_log_id_work_logs_id_fk" FOREIGN KEY ("work_log_id") REFERENCES "public"."work_logs"("id") ON DELETE cascade ON UPDATE no action;

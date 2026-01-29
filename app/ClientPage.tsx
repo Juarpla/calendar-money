@@ -187,6 +187,7 @@ export default function ClientHome({ initialCompanies, initialWorkLogs, initialT
              <TransportSummary
                 companies={companies}
                 transportLogs={transportLogs}
+                workLogs={workLogs}
              />
              <CompanyManager
                 companies={companies}

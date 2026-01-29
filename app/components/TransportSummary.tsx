@@ -1,18 +1,37 @@
 "use client";
-import { useState } from 'react';
-import { Company, TransportLog } from '../types';
+import { useState, useEffect } from 'react';
+import { Company, TransportLog, WorkLog } from '../types';
 
 interface TransportSummaryProps {
   companies: Company[];
   transportLogs: TransportLog[];
+  workLogs: WorkLog[];
 }
 
-export default function TransportSummary({ companies, transportLogs }: TransportSummaryProps) {
+export default function TransportSummary({ companies, transportLogs, workLogs }: TransportSummaryProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [now, setNow] = useState<Date>(() => new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const transportByCompany = companies.map(company => {
-    // Filter transport logs for this company (only unpaid)
-    const logs = transportLogs.filter(log => log.companyId === company.id && !log.isPaid);
+    // Filter transport logs for this company (only unpaid and after 1 hour has passed)
+    const logs = transportLogs.filter(log => {
+      if (log.companyId !== company.id || log.isPaid) return false;
+
+      // Find the associated workLog to get the hour
+      const workLog = workLogs.find(w => w.id === log.workLogId);
+      if (!workLog) return false;
+
+      // Check if 1 hour has passed since the work started
+      const [year, month, day] = log.date.split('-').map(Number);
+      const completionTime = new Date(year, month - 1, day, workLog.hour + 1, 0, 0);
+
+      return now >= completionTime;
+    });
 
     // Calculate total transport cost
     const totalCost = logs.reduce((sum, log) => sum + log.tripCost, 0);

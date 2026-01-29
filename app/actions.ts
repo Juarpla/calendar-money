@@ -84,6 +84,38 @@ export async function createTransportLogAction(data: TransportLog) {
   revalidatePath("/");
 }
 
+export async function updateTransportLogAction(data: TransportLog) {
+  await db.update(transportLogs)
+    .set(data)
+    .where(eq(transportLogs.id, data.id));
+  revalidatePath("/");
+}
+
+export async function createOrUpdateTransportLogAction(data: TransportLog) {
+  // Check if there's already a transport log for this workLogId
+  if (data.workLogId) {
+    const existing = await db.select().from(transportLogs).where(eq(transportLogs.workLogId, data.workLogId));
+    if (existing.length > 0) {
+      // Update existing transport log
+      await db.update(transportLogs)
+        .set({
+          tripCost: data.tripCost,
+          description: data.description,
+          companyId: data.companyId,
+          date: data.date,
+        })
+        .where(eq(transportLogs.id, existing[0].id));
+      revalidatePath("/");
+      return existing[0].id; // Return the existing ID
+    }
+  }
+
+  // Create new transport log
+  await db.insert(transportLogs).values(data);
+  revalidatePath("/");
+  return data.id; // Return the new ID
+}
+
 export async function deleteTransportLogAction(id: string) {
   await db.delete(transportLogs).where(eq(transportLogs.id, id));
   revalidatePath("/");

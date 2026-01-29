@@ -25,7 +25,8 @@ export default function WorkEntryModal({
 }: WorkEntryModalProps) {
   if (!isOpen) return null;
 
-  const handleCompanySelect = (companyId: string) => {
+  const handleCompanySelect = (e: React.MouseEvent, companyId: string) => {
+    e.stopPropagation();
     onOpenTransportModal(companyId);
   };
 
@@ -43,7 +44,8 @@ export default function WorkEntryModal({
           {companies.map((company) => (
             <button
               key={company.id}
-              onClick={() => handleCompanySelect(company.id)}
+              type="button"
+              onClick={(e) => handleCompanySelect(e, company.id)}
               style={currentCompanyId === company.id ? {
                   borderColor: company.color || '#3b82f6',
                   backgroundColor: `${company.color || '#3b82f6'}1a` // 10% opacity

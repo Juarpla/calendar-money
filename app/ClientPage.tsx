@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import CompanyManager from "./components/CompanyManager";
-import Calendar from "./components/Calendar";
+import dynamic from "next/dynamic";
 import EarningsSummary from "./components/EarningsSummary";
 import TransportSummary from "./components/TransportSummary";
 import TransportCostModal from "./components/TransportCostModal";
@@ -14,7 +14,7 @@ import {
     createOrUpdateWorkLogAction,
     deleteWorkLogAction,
     resetPaymentsAction,
-    createTransportLogAction
+    createOrUpdateTransportLogAction
 } from "./actions";
 
 interface ClientPageProps {
@@ -22,6 +22,8 @@ interface ClientPageProps {
     initialWorkLogs: WorkLog[];
     initialTransportLogs: TransportLog[];
 }
+
+const CalendarNoSSR = dynamic(() => import("./components/Calendar"), { ssr: false });
 
 export default function ClientHome({ initialCompanies, initialWorkLogs, initialTransportLogs }: ClientPageProps) {
   const [companies, setCompanies] = useState<Company[]>(initialCompanies);
@@ -69,7 +71,18 @@ export default function ClientHome({ initialCompanies, initialWorkLogs, initialT
   const updateLog = async (log: WorkLog) => {
     const others = workLogs.filter(l => !(l.date === log.date && l.hour === log.hour));
     setWorkLogs([...others, log]);
-    await createOrUpdateWorkLogAction(log);
+
+    // Create a clean serializable object for server action
+    const cleanLog: WorkLog = {
+      id: log.id,
+      date: log.date,
+      hour: log.hour,
+      companyId: log.companyId,
+      isPaid: log.isPaid,
+      hourlyRateSnapshot: log.hourlyRateSnapshot,
+    };
+
+    await createOrUpdateWorkLogAction(cleanLog);
   };
 
   const removeLog = async (logId: string) => {
@@ -101,15 +114,40 @@ export default function ClientHome({ initialCompanies, initialWorkLogs, initialT
       description
     };
 
-    setTransportLogs(prev => [...prev, newTransportLog]);
-    await createTransportLogAction(newTransportLog);
+    // Check if there's already a transport log for this workLogId
+    const existingTransportLog = transportLogs.find(t => t.workLogId === transportModalData.workLogId);
+
+    if (existingTransportLog) {
+      // Update existing transport log in state
+      setTransportLogs(prev => prev.map(t =>
+        t.workLogId === transportModalData.workLogId
+          ? { ...existingTransportLog, tripCost: cost, description, companyId: transportModalData.companyId, date: transportModalData.date }
+          : t
+      ));
+    } else {
+      // Add new transport log to state
+      setTransportLogs(prev => [...prev, newTransportLog]);
+    }
+
+    // Create a clean serializable object for server action
+    const cleanTransportLog: TransportLog = {
+      id: newTransportLog.id,
+      workLogId: newTransportLog.workLogId,
+      date: newTransportLog.date,
+      companyId: newTransportLog.companyId,
+      tripCost: newTransportLog.tripCost,
+      description: newTransportLog.description,
+    };
+
+    // Save to database (will update if exists, create if not)
+    await createOrUpdateTransportLogAction(cleanTransportLog);
 
     setTransportModalOpen(false);
     setTransportModalData(null);
   };
 
   return (
-    <div className="min-h-screen bg-zinc-100 dark:bg-black text-zinc-900 dark:text-zinc-100 p-4 pb-20 sm:p-8 font-sans">
+    <div className="min-h-screen bg-zinc-100 dark:bg-black text-zinc-900 dark:text-zinc-100 p-4 pb-20 sm:p-8 font-sans" suppressHydrationWarning>
       <main className="max-w-6xl mx-auto space-y-6">
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
            <div>
@@ -120,7 +158,7 @@ export default function ClientHome({ initialCompanies, initialWorkLogs, initialT
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-8 space-y-6">
-             <Calendar
+             <CalendarNoSSR
                companies={companies}
                workLogs={workLogs}
                onUpdateLog={updateLog}
@@ -158,6 +196,7 @@ export default function ClientHome({ initialCompanies, initialWorkLogs, initialT
           onSave={handleSaveTransportCost}
           companyName={transportModalData ? companies.find(c => c.id === transportModalData.companyId)?.name || '' : ''}
           selectedDate={transportModalData?.date || ''}
+          existingTransport={transportModalData ? transportLogs.find(t => t.workLogId === transportModalData.workLogId) : undefined}
         />
       </main>
     </div>

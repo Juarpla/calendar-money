@@ -5,14 +5,15 @@ import { Company, TithingLog } from '../types';
 interface TithingSummaryProps {
   companies: Company[];
   tithingLogs: TithingLog[];
+  onResetTithing: (companyId: string) => void;
 }
 
-export default function TithingSummary({ companies, tithingLogs }: TithingSummaryProps) {
+export default function TithingSummary({ companies, tithingLogs, onResetTithing }: TithingSummaryProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const tithingByCompany = companies.map(company => {
-    // Filter tithing logs for this company
-    const logs = tithingLogs.filter(log => log.companyId === company.id);
+    // Filter tithing logs for this company (only unpaid)
+    const logs = tithingLogs.filter(log => log.companyId === company.id && !log.isPaid);
 
     // Calculate total tithing amount
     const totalAmount = logs.reduce((sum, log) => sum + log.amount, 0);
@@ -22,7 +23,7 @@ export default function TithingSummary({ companies, tithingLogs }: TithingSummar
       totalAmount,
       count: logs.length
     };
-  }).filter(item => item.count > 0); // Only show companies with tithing logs
+  }).filter(item => item.count > 0); // Only show companies with unpaid tithing logs
 
   const grandTotal = tithingByCompany.reduce((sum, c) => sum + c.totalAmount, 0);
 
@@ -51,6 +52,17 @@ export default function TithingSummary({ companies, tithingLogs }: TithingSummar
               <div className="text-sm text-gray-500 pl-5">
                 <span>{item.count} registro{item.count !== 1 ? 's' : ''} de diezmo</span>
               </div>
+
+              <button
+                onClick={() => {
+                  if(confirm('¿Estás seguro de reiniciar el diezmo acumulado para ' + item.name + '?')) {
+                    onResetTithing(item.id);
+                  }
+                }}
+                className="mt-2 ml-5 px-4 py-2 bg-purple-100 text-purple-800 rounded-lg text-sm font-medium hover:bg-purple-200 dark:bg-purple-900/40 dark:text-purple-200 dark:hover:bg-purple-900/60 transition-colors active:scale-95 touch-manipulation w-fit"
+              >
+                Reiniciar Diezmo
+              </button>
             </div>
           ))}
 

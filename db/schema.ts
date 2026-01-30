@@ -32,4 +32,5 @@ export const tithingLogs = pgTable("tithing_logs", {
   companyId: text("company_id").references(() => companies.id, { onDelete: 'cascade' }).notNull(),
   amount: doublePrecision("amount").notNull(),
   createdAt: text("created_at").notNull(), // ISO timestamp when payment was reset
+  isPaid: boolean("is_paid").default(false),
 });

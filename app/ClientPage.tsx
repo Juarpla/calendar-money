@@ -17,7 +17,8 @@ import {
     resetPaymentsAction,
     createOrUpdateTransportLogAction,
     resetTransportPaymentsAction,
-    createTithingLogAction
+    createTithingLogAction,
+    resetTithingPaymentsAction
 } from "./actions";
 
 interface ClientPageProps {
@@ -152,6 +153,15 @@ export default function ClientHome({ initialCompanies, initialWorkLogs, initialT
     ]);
   };
 
+  const resetTithing = async (companyId: string) => {
+    // Mark tithing logs as paid for this company
+    setTithingLogs(prev => prev.map(t =>
+      t.companyId === companyId ? { ...t, isPaid: true } : t
+    ));
+
+    await resetTithingPaymentsAction(companyId);
+  };
+
   const handleOpenTransportModal = (companyId: string, date: string, hour: number, workLogId: string) => {
     setTransportModalData({ companyId, date, hour, workLogId });
     setTransportModalOpen(true);
@@ -236,6 +246,7 @@ export default function ClientHome({ initialCompanies, initialWorkLogs, initialT
              <TithingSummary
                 companies={companies}
                 tithingLogs={tithingLogs}
+                onResetTithing={resetTithing}
              />
              <CompanyManager
                 companies={companies}

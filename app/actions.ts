@@ -132,10 +132,20 @@ export async function resetTransportPaymentsAction(companyId: string) {
 // Tithing Logs Actions
 export async function getTithingLogs() {
   const result = await db.select().from(tithingLogs);
-  return result;
+  return result.map(t => ({
+    ...t,
+    isPaid: t.isPaid ?? undefined,
+  }));
 }
 
 export async function createTithingLogAction(data: TithingLog) {
   await db.insert(tithingLogs).values(data);
+  revalidatePath("/");
+}
+
+export async function resetTithingPaymentsAction(companyId: string) {
+  await db.update(tithingLogs)
+    .set({ isPaid: true })
+    .where(eq(tithingLogs.companyId, companyId));
   revalidatePath("/");
 }

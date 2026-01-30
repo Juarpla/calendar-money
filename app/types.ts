@@ -30,4 +30,5 @@ export interface TithingLog {
   companyId: string;
   amount: number; // 10% of (earnings - transport costs)
   createdAt: string; // ISO timestamp
+  isPaid?: boolean;
 }

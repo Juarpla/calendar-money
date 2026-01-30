@@ -24,3 +24,10 @@ export interface TransportLog {
   description?: string; // Optional description of the trip
   isPaid?: boolean;
 }
+
+export interface TithingLog {
+  id: string;
+  companyId: string;
+  amount: number; // 10% of (earnings - transport costs)
+  createdAt: string; // ISO timestamp
+}

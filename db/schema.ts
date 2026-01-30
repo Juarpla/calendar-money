@@ -26,3 +26,10 @@ export const transportLogs = pgTable("transport_logs", {
   description: text("description"),
   isPaid: boolean("is_paid").default(false),
 });
+
+export const tithingLogs = pgTable("tithing_logs", {
+  id: text("id").primaryKey(),
+  companyId: text("company_id").references(() => companies.id, { onDelete: 'cascade' }).notNull(),
+  amount: doublePrecision("amount").notNull(),
+  createdAt: text("created_at").notNull(), // ISO timestamp when payment was reset
+});

@@ -5,8 +5,9 @@ import CompanyManager from "./components/CompanyManager";
 import dynamic from "next/dynamic";
 import EarningsSummary from "./components/EarningsSummary";
 import TransportSummary from "./components/TransportSummary";
+import TithingSummary from "./components/TithingSummary";
 import TransportCostModal from "./components/TransportCostModal";
-import { Company, WorkLog, TransportLog } from "./types";
+import { Company, WorkLog, TransportLog, TithingLog } from "./types";
 import {
     createCompanyAction,
     updateCompanyAction,
@@ -15,21 +16,24 @@ import {
     deleteWorkLogAction,
     resetPaymentsAction,
     createOrUpdateTransportLogAction,
-    resetTransportPaymentsAction
+    resetTransportPaymentsAction,
+    createTithingLogAction
 } from "./actions";
 
 interface ClientPageProps {
     initialCompanies: Company[];
     initialWorkLogs: WorkLog[];
     initialTransportLogs: TransportLog[];
+    initialTithingLogs: TithingLog[];
 }
 
 const CalendarNoSSR = dynamic(() => import("./components/Calendar"), { ssr: false });
 
-export default function ClientHome({ initialCompanies, initialWorkLogs, initialTransportLogs }: ClientPageProps) {
+export default function ClientHome({ initialCompanies, initialWorkLogs, initialTransportLogs, initialTithingLogs }: ClientPageProps) {
   const [companies, setCompanies] = useState<Company[]>(initialCompanies);
   const [workLogs, setWorkLogs] = useState<WorkLog[]>(initialWorkLogs);
   const [transportLogs, setTransportLogs] = useState<TransportLog[]>(initialTransportLogs);
+  const [tithingLogs, setTithingLogs] = useState<TithingLog[]>(initialTithingLogs);
 
   // Transport modal state
   type TransportModalState = {
@@ -52,6 +56,10 @@ export default function ClientHome({ initialCompanies, initialWorkLogs, initialT
   useEffect(() => {
       setTransportLogs(initialTransportLogs);
   }, [initialTransportLogs]);
+
+  useEffect(() => {
+      setTithingLogs(initialTithingLogs);
+  }, [initialTithingLogs]);
 
   const addCompany = async (company: Company) => {
     setCompanies(prev => [...prev, company]);
@@ -92,7 +100,43 @@ export default function ClientHome({ initialCompanies, initialWorkLogs, initialT
   };
 
   const markAsPaid = async (companyId: string) => {
-    // Work logs
+    // Calculate tithing BEFORE marking as paid
+    // Get unpaid work logs for this company
+    const unpaidWorkLogs = workLogs.filter(log => log.companyId === companyId && !log.isPaid);
+
+    // Calculate total earnings
+    const company = companies.find(c => c.id === companyId);
+    const totalEarnings = unpaidWorkLogs.reduce((sum, log) => {
+      const rate = log.hourlyRateSnapshot ?? company?.hourlyRate ?? 0;
+      return sum + rate;
+    }, 0);
+
+    // Calculate total transport costs for these unpaid work logs
+    const totalTransport = unpaidWorkLogs.reduce((sum, log) => {
+      const transport = transportLogs.find(t => t.workLogId === log.id && !t.isPaid);
+      return sum + (transport?.tripCost || 0);
+    }, 0);
+
+    // Calculate tithing: 10% of (earnings - transport)
+    const tithingAmount = (totalEarnings - totalTransport) * 0.10;
+
+    // Only create tithing record if there's an amount to tithe
+    if (tithingAmount > 0) {
+      const newTithing: TithingLog = {
+        id: crypto.randomUUID(),
+        companyId,
+        amount: tithingAmount,
+        createdAt: new Date().toISOString()
+      };
+
+      // Add to local state
+      setTithingLogs(prev => [...prev, newTithing]);
+
+      // Save to database
+      await createTithingLogAction(newTithing);
+    }
+
+    // Work logs: mark as paid
     setWorkLogs(prev => prev.map(log =>
       log.companyId === companyId ? { ...log, isPaid: true } : log
     ));
@@ -188,6 +232,10 @@ export default function ClientHome({ initialCompanies, initialWorkLogs, initialT
                 companies={companies}
                 transportLogs={transportLogs}
                 workLogs={workLogs}
+             />
+             <TithingSummary
+                companies={companies}
+                tithingLogs={tithingLogs}
              />
              <CompanyManager
                 companies={companies}

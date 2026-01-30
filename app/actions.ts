@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/db";
-import { companies, workLogs, transportLogs } from "@/db/schema";
-import { Company, WorkLog, TransportLog } from "./types";
+import { companies, workLogs, transportLogs, tithingLogs } from "@/db/schema";
+import { Company, WorkLog, TransportLog, TithingLog } from "./types";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -126,5 +126,16 @@ export async function resetTransportPaymentsAction(companyId: string) {
   await db.update(transportLogs)
     .set({ isPaid: true })
     .where(eq(transportLogs.companyId, companyId));
+  revalidatePath("/");
+}
+
+// Tithing Logs Actions
+export async function getTithingLogs() {
+  const result = await db.select().from(tithingLogs);
+  return result;
+}
+
+export async function createTithingLogAction(data: TithingLog) {
+  await db.insert(tithingLogs).values(data);
   revalidatePath("/");
 }

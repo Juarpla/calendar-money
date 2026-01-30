@@ -36,6 +36,13 @@
       "when": 1769636230100,
       "tag": "0004_last_skullbuster",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1769730846927,
+      "tag": "0005_wet_raider",
+      "breakpoints": true
     }
   ]
 }

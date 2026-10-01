@@ -7,6 +7,7 @@ import EarningsSummary from "./components/EarningsSummary";
 import TransportSummary from "./components/TransportSummary";
 import TithingSummary from "./components/TithingSummary";
 import TransportCostModal from "./components/TransportCostModal";
+import ExportFinancialModal from "./components/ExportFinancialModal";
 import { Company, WorkLog, TransportLog, TithingLog } from "./types";
 import {
     createCompanyAction,
@@ -45,6 +46,7 @@ export default function ClientHome({ initialCompanies, initialWorkLogs, initialT
   };
   const [transportModalOpen, setTransportModalOpen] = useState(false);
   const [transportModalData, setTransportModalData] = useState<TransportModalState | null>(null);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
 
   useEffect(() => {
       setCompanies(initialCompanies);
@@ -214,11 +216,18 @@ export default function ClientHome({ initialCompanies, initialWorkLogs, initialT
   return (
     <div className="min-h-screen bg-zinc-100 dark:bg-black text-zinc-900 dark:text-zinc-100 p-4 pb-20 sm:p-8 font-sans" suppressHydrationWarning>
       <main className="max-w-6xl mx-auto space-y-6">
-        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
            <div>
             <h1 className="text-3xl font-bold tracking-tight">Mi Calendario de Pagos</h1>
             <p className="text-zinc-500 dark:text-zinc-400">Rastrea tu trabajo por horas y ganancias.</p>
            </div>
+           <button
+             type="button"
+             onClick={() => setExportModalOpen(true)}
+             className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium shadow"
+           >
+             Exportar Excel
+           </button>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -257,6 +266,17 @@ export default function ClientHome({ initialCompanies, initialWorkLogs, initialT
              />
           </div>
         </div>
+
+        {exportModalOpen && (
+          <ExportFinancialModal
+            isOpen
+            onClose={() => setExportModalOpen(false)}
+            companies={companies}
+            workLogs={workLogs}
+            transportLogs={transportLogs}
+            tithingLogs={tithingLogs}
+          />
+        )}
 
         <TransportCostModal
           isOpen={transportModalOpen}
